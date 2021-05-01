@@ -1,4 +1,5 @@
 import React from 'react';
+import useAppData from '../hooks/useAppData';
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -14,62 +15,71 @@ import './StatSheet.css';
 const useStyles = makeStyles({
   table: {
     background: 'lightgray',
-    maxWidth: 1000,
-    height: 600,
     minWidth: 650,
-    marginLeft: 310,
-    marginBottom: 100,
-    boxShadow: '0 5px 10px 4px rgba(79, 118, 134, 0.7)', 
+    boxShadow: '0 5px 10px 4px rgba(79, 118, 134, 0.7)',
+    overflow: 'scroll' 
   },
   header: {
     marginBottom: 30,
   }
 });
 
-function createData(game, team, teamScore, opponent, opponentScore) {
-  return { game, team, teamScore, opponent, opponentScore };
-};
-
-const rows = [
-  createData(1, 'Raptors', 21, 'Celtics', 10),
-  createData(2, 'Raptors', 121, 'Jazz', 100),
-  createData(3, 'Raptors', 201, 'Heat', 101),
-  createData(4, 'Raptors', 150, 'Lakers', 123),
-  createData(5, 'Raptors', 98, 'Clippers', 80),
-  createData(6, 'Raptors', 300, 'Grizzlies', 90),
-  createData(7, 'Raptors', 114, 'Suns', 113),
-  createData(8, 'Raptors', 118, 'Hornets', 100),
-  createData(9, 'Raptors', 78, 'Bulls', 60),
-  createData(10, 'Raptors', 90, 'Rockets', 80),
-  createData(11, 'Raptors', 100, 'Mavericks', 10),
-]
-
 function StatSheet() {
+
+  function createData(gameId, home, homeScore, hWinLoss, away, awayScore, vWinLoss, date) {
+    return { gameId, home, homeScore, hWinLoss, away, awayScore, vWinLoss, date };
+  };
+
+  const { selectedTeam } = useAppData();
+
+  const info = [];
+
+  for (let game of selectedTeam.games) {
+    if (game.statusGame === "Finished") {
+      let hWinOrLoss = '';
+      let vWinOrLoss = '';
+      if (game.vTeam.score.points < game.hTeam.score.points) {
+        hWinOrLoss = 'W';
+        vWinOrLoss = 'L';
+      } else {
+        hWinOrLoss = 'L';
+        vWinOrLoss = 'W';
+      }
+      info.push(createData(game.gameId, game.hTeam.fullName, game.hTeam.score.points, hWinOrLoss, game.vTeam.fullName, game.vTeam.score.points, vWinOrLoss))
+    } else {
+      info.push(createData(game.gameId, game.hTeam.fullName, "TBD", "N/A", game.vTeam.fullName, "TBD", "N/A"))
+    }
+  }
+
+  const rows = info.reverse();
+
   const classes = useStyles();
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer className="table-container" component={Paper}>
       <h1 className={classes.header}>Team</h1>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Game</TableCell>
-            <TableCell align="center">Team</TableCell>
-            <TableCell align="center">Team Score</TableCell>
-            <TableCell align="center">Opponent</TableCell>
-            <TableCell align="center">Opponent Score</TableCell>
+            <TableCell align="center">Home</TableCell>
+            <TableCell align="center">Score</TableCell>
+            <TableCell align="center">Win/Loss</TableCell>
+            <TableCell align="center">Away</TableCell>
+            <TableCell align="center">Score</TableCell>
+            <TableCell align="center">Win/Loss</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.game}>
-              <TableCell component="th" scope="row">
-                {row.game}
+            <TableRow key={row.gameId}>
+              <TableCell align="center" component="th" scope="row">
+                {row.home}
               </TableCell>
-              <TableCell align="center">{row.team}</TableCell>
-              <TableCell align="center">{row.teamScore}</TableCell>
-              <TableCell align="center">{row.opponent}</TableCell>
-              <TableCell align="center">{row.opponentScore}</TableCell>
+              <TableCell align="center">{row.homeScore}</TableCell>
+              <TableCell align="center">{row.hWinLoss}</TableCell>
+              <TableCell align="center">{row.away}</TableCell>
+              <TableCell align="center">{row.awayScore}</TableCell>
+              <TableCell align="center">{row.vWinLoss}</TableCell>
             </TableRow>
           ))}
         </TableBody>

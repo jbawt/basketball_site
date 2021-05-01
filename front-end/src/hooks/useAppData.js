@@ -9,6 +9,13 @@ function useAppData() {
     teams: []
   });
 
+  const [selectedTeam, setSelectedTeam] = useState({
+    teamId: 2,
+    games: []
+  });
+  
+  const { teamId } = selectedTeam;
+
   useEffect(() => {
     axios.get('http://localhost:3000/')
       .then((res) => {
@@ -31,16 +38,24 @@ function useAppData() {
     .catch(err => console.log(err))
 
     // currently grabs just atlanta games until team picking becomes dynamic.
-    axios.get('http://localhost:3000/stats')
+    axios.get('http://localhost:3000/stats', { 
+        params: {
+          id: teamId 
+        }
+      })
       .then((res) => {
         const currentGames = res.data.api.games.filter((game) => game.seasonYear >= "2020");
-        console.log(currentGames);
+        setSelectedTeam({
+          ...selectedTeam,
+          games: currentGames
+        })
+        // console.log(currentGames)
       })
       .catch(err => console.log(err))
       
-  }, [])
+  }, [teamId])
 
-  return { state }
+  return { state, selectedTeam, setSelectedTeam }
 }
 
 export default useAppData

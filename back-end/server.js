@@ -3,7 +3,10 @@ const express = require('express');
 const axios = require('axios');
 const { response } = require('express');
 const app = express();
+const cors = require('cors');
 const PORT = 3000;
+
+app.use(cors())
 
 
 app.get('/', (req, res) => {
@@ -28,9 +31,12 @@ app.get('/teams', (req, res) => {
 })
 
 app.get('/stats', (req, res) => {
+
+  const id = req.query.id;
+  
   const options = {
     method: 'GET',
-    url: `https://api-nba-v1.p.rapidapi.com/games/teamId/1`,
+    url: `https://api-nba-v1.p.rapidapi.com/games/teamId/${id}`,
     headers: {
       'x-rapidapi-key': process.env.KEY,
       'x-rapidapi-host': process.env.HOST
