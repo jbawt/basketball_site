@@ -49,7 +49,6 @@ function useAppData() {
           ...selectedTeam,
           games: currentGames
         })
-        // console.log(currentGames)
       })
       .catch(err => console.log(err))
       

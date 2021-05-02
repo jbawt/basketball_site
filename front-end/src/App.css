@@ -5,7 +5,10 @@
 
 .table-div {
   width: 85%;
+  height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
+  overflow: hidden;
 }

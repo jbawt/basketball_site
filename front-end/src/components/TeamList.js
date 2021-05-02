@@ -4,7 +4,7 @@ import useAppData from '../hooks/useAppData';
 import './TeamList.css'
 
 function TeamList() {
-  const { state, setSelectedTeam, selectedTeam, setData } = useAppData();
+  const { state, setSelectedTeam, selectedTeam } = useAppData();
 
   const selected = (teamID) => {
     setSelectedTeam({
@@ -15,7 +15,7 @@ function TeamList() {
 
   const names = state.teams.map((team, key) => {
     return (
-      <div key={key} onClick={() => selected(team.teamId)} onMouseDown={() => setData()} className="team">
+      <div key={key} onClick={() => selected(team.teamId)} className="team">
         <p>{ team.fullName }</p>
         <img className="team-logo" src={team.logo} alt="logo" />
       </div>

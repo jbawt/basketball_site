@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import useAppData from '../hooks/useAppData';
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -16,6 +16,7 @@ const useStyles = makeStyles({
   table: {
     background: 'lightgray',
     minWidth: 650,
+    maxHeight: '100vh',
     boxShadow: '0 5px 10px 4px rgba(79, 118, 134, 0.7)',
     overflow: 'scroll' 
   },
@@ -26,32 +27,36 @@ const useStyles = makeStyles({
 
 function StatSheet() {
 
+  const [rows, setRows] = useState([]);
+
+  const { selectedTeam } = useAppData();
+
   function createData(gameId, home, homeScore, hWinLoss, away, awayScore, vWinLoss, date) {
     return { gameId, home, homeScore, hWinLoss, away, awayScore, vWinLoss, date };
   };
 
-  const { selectedTeam } = useAppData();
+  useEffect(() => {
+    const info = [];
 
-  const info = [];
-
-  for (let game of selectedTeam.games) {
-    if (game.statusGame === "Finished") {
-      let hWinOrLoss = '';
-      let vWinOrLoss = '';
-      if (game.vTeam.score.points < game.hTeam.score.points) {
-        hWinOrLoss = 'W';
-        vWinOrLoss = 'L';
+    for (let game of selectedTeam.games) {
+      if (game.statusGame === "Finished") {
+        let hWinOrLoss = '';
+        let vWinOrLoss = '';
+        if (game.vTeam.score.points < game.hTeam.score.points) {
+          hWinOrLoss = 'W';
+          vWinOrLoss = 'L';
+        } else {
+          hWinOrLoss = 'L';
+          vWinOrLoss = 'W';
+        }
+        info.push(createData(game.gameId, game.hTeam.fullName, game.hTeam.score.points, hWinOrLoss, game.vTeam.fullName, game.vTeam.score.points, vWinOrLoss))
       } else {
-        hWinOrLoss = 'L';
-        vWinOrLoss = 'W';
+        info.push(createData(game.gameId, game.hTeam.fullName, "TBD", "N/A", game.vTeam.fullName, "TBD", "N/A"))
       }
-      info.push(createData(game.gameId, game.hTeam.fullName, game.hTeam.score.points, hWinOrLoss, game.vTeam.fullName, game.vTeam.score.points, vWinOrLoss))
-    } else {
-      info.push(createData(game.gameId, game.hTeam.fullName, "TBD", "N/A", game.vTeam.fullName, "TBD", "N/A"))
     }
-  }
 
-  const rows = info.reverse();
+    setRows(info.reverse());
+  }, [selectedTeam])
 
   const classes = useStyles();
 
