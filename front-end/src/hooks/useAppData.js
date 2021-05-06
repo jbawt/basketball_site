@@ -38,6 +38,7 @@ function useAppData() {
     .catch(err => console.log(err))
 
     // currently grabs just atlanta games until team picking becomes dynamic.
+    // just testing ssh key
     axios.get('http://localhost:3000/stats', { 
         params: {
           id: teamId 
